@@ -1,3 +1,10 @@
+## Update V1.0.0
+### Steamodded
+* Updated to Steamodded version 1.0 and lovely version 0.6.
+### Other
+* Added localization messages to Seal Collector.
+* Fisherman can now give negative hand size.
+* Straight Nate will now only show up if you have either Odd Todd or Even Steven.
 ## Update V0.13.3
 ### Resprites
 * New sprite for Boating License (now Fishing License), done by `@Grassy`.

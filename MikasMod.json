@@ -1,0 +1,13 @@
+{
+    "id": "MikasMod",
+    "name": "Mika's Mod",
+    "author": ["Mikadoe"],
+    "description": "A mod adding Jokers, Decks, Tarots and Spectral cards. Check the GitHub for more information :)",
+    "prefix": "mikas",
+    "main_file": "MikasMod.lua",
+    "badge_colour": "FD5DA8",
+    "dependencies": [
+        "Steamodded (>=1.0.0~ALPHA-1225a)"
+    ],
+    "version": "1.0.0"
+}
