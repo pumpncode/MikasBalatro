@@ -4,7 +4,7 @@ SMODS.current_mod.extra_tabs = function()
         label = "Credits",
         tab_definition_function = function()
             return {
-                -- TODO: Credit Grassy for art, Elbe and Dimserene for porting and maintaining.
+                -- TODO: Credit Grassy for art and Elbe for porting and maintaining.
             }
         end
     }
@@ -76,7 +76,11 @@ SMODS.Joker {
     pos = { x = 0, y = 0 },
 
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.Xmult } }
+        return {
+            vars = {
+                card.ability.extra.Xmult
+            }
+        }
     end,
 
     calculate = function(self, card, context)
@@ -125,7 +129,12 @@ SMODS.Joker {
     pos = { x = 1, y = 0 },
 
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.Xmult, card.ability.extra.j_slots } }
+        return {
+            vars = {
+                card.ability.extra.Xmult,
+                card.ability.extra.j_slots
+            }
+        }
     end,
 
     calculate = function(self, card, context)
@@ -199,7 +208,14 @@ SMODS.Joker {
         if card.ability.extra.current_h_size >= 0 then
             modifier = "+"
         end
-        return { vars = { card.ability.extra.current_h_size, card.ability.extra.h_mod, modifier } }
+
+        return {
+            vars = {
+                card.ability.extra.current_h_size,
+                card.ability.extra.h_mod,
+                modifier
+            }
+        }
     end,
 
     calculate = function(self, card, context)
@@ -272,7 +288,12 @@ SMODS.Joker {
     pos = { x = 3, y = 0 },
 
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.current_mult, card.ability.extra.mult_mod } }
+        return {
+            vars = {
+                card.ability.extra.current_mult,
+                card.ability.extra.mult_mod
+            }
+        }
     end,
 
     calculate = function(self, card, context)
@@ -346,7 +367,12 @@ SMODS.Joker {
     pos = { x = 4, y = 0 },
 
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.current_Xmult, card.ability.extra.Xmult_mod } }
+        return {
+            vars = {
+                card.ability.extra.current_Xmult,
+                card.ability.extra.Xmult_mod
+            }
+        }
     end,
 
     calculate = function(self, card, context)
@@ -412,7 +438,12 @@ SMODS.Joker {
     pos = { x = 5, y = 0 },
 
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.current_chips, card.ability.extra.chip_mod } }
+        return {
+            vars = {
+                card.ability.extra.current_chips,
+                card.ability.extra.chip_mod
+            }
+        }
     end,
 
     calculate = function(self, card, context)
@@ -494,7 +525,11 @@ SMODS.Joker {
     pos = { x = 6, y = 0 },
 
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.chip_mod } }
+        return {
+            vars = {
+                card.ability.extra.chip_mod
+            }
+        }
     end,
 
     calculate = function(self, card, context)
@@ -589,6 +624,429 @@ SMODS.Joker {
         if context.after and not context.blueprint and context.cardarea == G.jokers then
             card.ability.extra.dollars = 0
             card.ability.extra.seven_tally = 0
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "deli_ticket",
+    loc_txt = {
+        name = "Deli Ticket",
+        text = {
+            "Gives {C:mult}+#1#{} Mult, {C:chips}+#2#{}",
+            "Chips and {X:mult,C:white}X#3#{} Mult on",
+            "the {C:attention}#5#th{} action",
+            "{C:inactive}(Current action: {C:attention}#4#{C:inactive} )"
+        }
+    },
+
+    config = {
+        extra = {
+            mult = 20,
+            chips = 100,
+            Xmult = 1.5,
+            every = 4,
+            action_tally = 1
+        }
+    },
+    rarity = 2,
+    cost = 7,
+    unlocked = true,
+    discovered = false,
+    blueprint_compat = true,
+
+    atlas = "mikas_jokers",
+    pos = { x = 8, y = 0 },
+
+    loc_vars = function(self, info_queue, card)
+        return {
+            vars = {
+                card.ability.extra.mult,
+                card.ability.extra.chips,
+                card.ability.extra.Xmult,
+                card.ability.extra.action_tally,
+                card.ability.extra.every
+            }
+        }
+    end,
+
+    calculate = function(self, card, context)
+        -- Increment action tally
+        if context.before and not context.blueprint then
+            card.ability.extra.action_tally = card.ability.extra.action_tally + 1
+        end
+
+        -- Apply mult, chips and xmult
+        if context.joker_main then
+            if card.ability.extra.action_tally == card.ability.extra.every + 1 then
+                return {
+                    -- Return bonus message and apply bonus
+                    mult_mod = card.ability.extra.mult,
+                    chip_mod = card.ability.extra.chips,
+                    Xmult_mod = card.ability.extra.Xmult,
+                    message = localize("k_mikas_bonus"),
+                    card = card
+                }
+            elseif not context.blueprint then
+                -- Return charging message
+                return {
+                    message = localize("k_mikas_charging"),
+                    colour = G.C.JOKER_GREY,
+                    card = card
+                }
+            end
+        end
+
+        -- Reset action tally
+        if context.after and not context.blueprint and context.cardarea == G.jokers then
+            if card.ability.extra.action_tally == card.ability.extra.every + 1 then
+                card.ability.extra.action_tally = 1
+            end
+        end
+
+        -- Increment action tally
+        if context.pre_discard and not context.blueprint and not context.hook then
+            card.ability.extra.action_tally = (card.ability.extra.action_tally % card.ability.extra.every) + 1
+            if card.ability.extra.action_tally == 1 then
+                -- Reset message
+                card_eval_status_text(card, "extra", nil, nil, nil, {
+                    message = localize("k_reset")
+                })
+            else
+                -- Charging message
+                card_eval_status_text(card, "extra", nil, nil, nil, {
+                    message = localize("k_mikas_charging"),
+                    colour = G.C.JOKER_GREY
+                })
+            end
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "joker_of_the_month",
+    loc_txt = {
+        name = "Joker of the Month",
+        text = {
+            "Gains {X:mult,C:white}X#2#{} Mult when",
+            "a blind is finished with",
+            "{C:attention}X#3#{} the chip requirement",
+            "{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)"
+        }
+    },
+
+    config = {
+        extra = {
+            current_Xmult = 1,
+            Xmult_mod = 0.25,
+            req = 2
+        }
+    },
+    rarity = 3,
+    cost = 8,
+    unlocked = true,
+    discovered = false,
+    blueprint_compat = true,
+
+    atlas = "mikas_jokers",
+    pos = { x = 9, y = 0 },
+
+    loc_vars = function(self, info_queue, card)
+        return {
+            vars = {
+                card.ability.extra.current_Xmult,
+                card.ability.extra.Xmult_mod,
+                card.ability.extra._req
+            }
+        }
+    end,
+
+    calculate = function(self, card, context)
+        -- Apply xmult
+        if context.joker_main then
+            if card.ability.extra.current_Xmult > 1 then
+                return {
+                    message = localize {
+                        type = "variable",
+                        key = "a_xmult",
+                        vars = { card.ability.extra.current_Xmult }
+                    },
+                    Xmult_mod = card.ability.extra.current_Xmult,
+                    card = card
+                }
+            end
+        end
+
+        -- See if total scored chips > 2 * blind chips, then increment xmult
+        if context.end_of_round and not context.individual and not context.repetition and not context.blueprint then
+            if G.GAME.chips > (card.ability.extra.req * G.GAME.blind.chips) then
+                card.ability.extra.current_Xmult = card.ability.extra.current_Xmult + card.ability.extra.Xmult_mod
+                card_eval_status_text(card, "extra", nil, nil, nil, {
+                    message = localize {
+                        type = 'variable',
+                        key = 'a_xmult',
+                        vars = { card.ability.extra.current_Xmult }
+                    }
+                })
+            end
+        end
+    end,
+}
+
+SMODS.Joker {
+    key = "sniper",
+    loc_txt = {
+        name = "The Sniper",
+        text = {
+            "Gains {X:mult,C:white}X#2#{} Mult when a",
+            "blind is finished within {C:attention}#3#%{} of",
+            "the {C:attention}exact{} chip requirement",
+            "{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)"
+        }
+    },
+
+    config = {
+        extra = {
+            current_Xmult = 1,
+            Xmult_mod = 2,
+            percentage = 10
+        }
+    },
+    rarity = 3,
+    cost = 10,
+    unlocked = true,
+    discovered = false,
+    blueprint_compat = true,
+
+    atlas = "mikas_jokers",
+    pos = { x = 0, y = 1 },
+
+    loc_vars = function(self, info_queue, card)
+        return {
+            vars = {
+                card.ability.extra.current_Xmult,
+                card.ability.extra.Xmult_mod,
+                card.ability.extra.percentage
+            }
+        }
+    end,
+
+    calculate = function(self, card, context)
+        -- Apply xmult
+        if context.joker_main then
+            if card.ability.extra.current_Xmult > 1 then
+                return {
+                    message = localize {
+                        type = "variable",
+                        key = "a_xmult",
+                        vars = { card.ability.extra.current_Xmult }
+                    },
+                    Xmult_mod = card.ability.extra.current_Xmult,
+                    card = card
+                }
+            end
+        end
+
+        -- See if total scored chips == blind chips (within percentage), then increment xmult
+        if context.end_of_round and not context.individual and not context.repetition and not context.blueprint then
+            if G.GAME.chips <= G.GAME.blind.chips * (1 + card.ability.extra.percentage / 100) then
+                card.ability.extra.current_Xmult = card.ability.extra.current_Xmult + card.ability.extra.Xmult_mod
+                card_eval_status_text(card, "extra", nil, nil, nil, {
+                    message = localize {
+                        type = 'variable',
+                        key = 'a_xmult',
+                        vars = { card.ability.extra.current_Xmult }
+                    }
+                })
+            end
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "blackjack",
+    loc_txt = {
+        name = "Blackjack Joker",
+        text = {
+            "Gives {X:mult,C:white}X#1#{} Mult when",
+            "the ranks of all played",
+            "cards is {C:attention}exactly #2#",
+            "Gives {X:mult,C:white}X#3#{} Mult less for",
+            "every point below #2#"
+        }
+    },
+
+    config = {
+        extra = {
+            Xmult = 4,
+            rank_tally = { 0 },
+            updated_rank_tally = {},
+            _req = 21,
+            Xmult_mod = 0.5
+        }
+    },
+    rarity = 2,
+    cost = 6,
+    unlocked = true,
+    discovered = false,
+    blueprint_compat = true,
+
+    atlas = "mikas_jokers",
+    pos = { x = 1, y = 1 },
+
+    loc_vars = function(self, info_queue, card)
+        return {
+            vars = {
+                card.ability.extra.Xmult,
+                card.ability.extra.req,
+                card.ability.extra.Xmult_mod
+            }
+        }
+    end,
+
+    calculate = function(self, card, context)
+        -- For full hand
+        if context.before and not context.blueprint then
+            -- For every played card
+            for _, v in ipairs(context.full_hand) do
+                local id = v:get_id()
+                if id <= 10 then -- Numbered cards
+                    for k, v in ipairs(card.ability.extra.rank_tally) do
+                        card.ability.extra.rank_tally[k] = v + id
+                    end
+                elseif id < 14 then -- Face cards
+                    for k, v in ipairs(card.ability.extra.rank_tally) do
+                        card.ability.extra.rank_tally[k] = v + 10
+                    end
+                else -- Aces, need to be handled differently because they can either have a value of 1 or 11
+                    for k, v in ipairs(card.ability.extra.rank_tally) do
+                        -- If someone ever plays 32 aces in one hand, I'm doomed
+                        card.ability.extra.rank_tally[k] = v + 11
+                        table.insert(card.ability.extra.updated_rank_tally, v + 1)
+                    end
+
+                    -- Append updated_rank_tally to rank_tally
+                    for _, v in ipairs(card.ability.extra.updated_rank_tally) do
+                        table.insert(card.ability.extra.rank_tally, v)
+                    end
+
+                    -- Reset updated_rank_tally
+                    card.ability.extra.updated_rank_tally = {}
+                end
+            end
+        end
+
+        -- When hand is played
+        if context.joker_main then
+            -- For every rank_tally, check if we got 21
+            local Xmult = 1
+            for _, v in ipairs(card.ability.extra.rank_tally) do
+                local diff = card.ability.extra._req - v
+                local new_Xmult = card.ability.extra.Xmult - diff * card.ability.extra.Xmult_mod
+                -- Update Xmult if it is higher than saved Xmult, and score is not above the required score
+                if diff >= 0 and new_Xmult > Xmult then
+                    Xmult = new_Xmult
+                end
+            end
+
+            -- Apply Xmult
+            if Xmult > 1 then
+                return {
+                    message = localize {
+                        type = "variable",
+                        key = "a_xmult",
+                        vars = { Xmult }
+                    },
+                    Xmult_mod = Xmult,
+                    card = card
+                }
+            end
+        end
+
+        -- Reset rank_tally
+        if context.after and not context.blueprint and context.cardarea == G.jokers then
+            card.ability.extra.rank_tally = { 0 }
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "batman",
+    loc_txt = {
+        name = "Batman",
+        text = {
+            "Gains {C:mult}+#2#{} Mult for",
+            "every {C:attention}non-lethal{} hand played",
+            "Mult gain increases for every",
+            "Joker with {C:attention}\"Joker\"{} in the name",
+            "{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)"
+        }
+    },
+
+    config = {
+        extra = {
+            current_mult = 1,
+            mult_mod = 1,
+            base = 1
+        }
+    },
+    rarity = 3,
+    cost = 8,
+    unlocked = true,
+    discovered = false,
+    blueprint_compat = true,
+
+    atlas = "mikas_jokers",
+    pos = { x = 2, y = 1 },
+
+    loc_vars = function(self, info_queue, card)
+        return {
+            vars = {
+                card.ability.extra.current_mult,
+                card.ability.extra.mult_mod
+            }
+        }
+    end,
+
+    calculate = function(self, card, context)
+        -- When hand is played
+        if context.joker_main then
+            -- Apply mult
+            return {
+                message = localize {
+                    type = "variable",
+                    key = "a_mult",
+                    vars = { card.ability.extra.current_mult }
+                },
+                mult_mod = card.ability.extra.current_mult
+            }
+        end
+
+        -- If blind did not end, increment mult
+        if context.cardarea == G.jokers and context.after and not context.blueprint then
+            if G.GAME.chips < G.GAME.blind.chips then
+                card.ability.extra.current_mult = card.ability.extra.current_mult + card.ability.extra.mult_mod
+                card_eval_status_text(card, "extra", nil, nil, nil, {
+                    message = localize {
+                        type = 'variable',
+                        key = 'a_mult',
+                        vars = { card.ability.extra.current_mult }
+                    }
+                })
+            end
+        end
+    end,
+
+    update = function(self, card)
+        if G.jokers then
+            card.ability.extra.mult_mod = card.ability.extra.base
+            -- Count all jokers with "Joker" in the name
+            for _, v in pairs(G.jokers.cards) do
+                if string.find(v.ability.name, "Joker") then
+                    -- Increase mult gain
+                    card.ability.extra.mult_mod = card.ability.extra.mult_mod + 1
+                end
+            end
         end
     end
 }
