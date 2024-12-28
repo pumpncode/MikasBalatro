@@ -325,8 +325,7 @@ SMODS.Joker {
         text = {
             "{X:mult,C:white}X#2#{} Mult per hand played",
             "Resets every round",
-            "{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)",
-            "{C:inactive}Art by {C:green,E:1,S:1.1}Grassy"
+            "{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)"
         }
     },
 

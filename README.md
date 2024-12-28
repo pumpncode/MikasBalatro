@@ -14,4 +14,4 @@ This is my mod for the game [Balatro](https://store.steampowered.com/app/2379780
 - For more information about installing mods, check the [Steamodded readme](https://github.com/Steamopollys/Steamodded?tab=readme-ov-file#how-to-install-a-mod).
 
 # Credit
-Special thanks to `@Grassy` for making the art and special thanks to `@Dimserene` and `@elbe` for porting the mod to 1.0.
+Special thanks to `@Grassy` for making the art and special thanks to `@elbe` for porting the mod to 1.0.

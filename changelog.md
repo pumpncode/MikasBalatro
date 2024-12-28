@@ -1,9 +1,11 @@
 ## Update V1.0.0
-### Steamodded
+### Steamodded Update
 * Updated to Steamodded version 1.0 and lovely version 0.6.
+### Balance Changes
+* Blackjack Joker now gives X4 Mult instead of X3 Mult.
+* Fisherman can now give negative hand size.
 ### Other
 * Added localization messages to Seal Collector.
-* Fisherman can now give negative hand size.
 * Straight Nate will now only show up if you have either Odd Todd or Even Steven.
 ## Update V0.13.3
 ### Resprites
